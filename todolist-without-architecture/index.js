@@ -45,10 +45,10 @@
 
         if(todolist.length != 0){
 
-            for(let i=0; i<todolist.length; i++){
+            for(var i=0; i<todolist.length; i++){
                 if(!todolist[i].done){
                     todoString +=`
-                        <li>
+                        <li data-id=${i}>
                             <div class="view">
                                 <input type="checkbox" class="toggle">
                                 <label>`+todolist[i].todo+`</label>
@@ -56,12 +56,22 @@
                             </div>
                         </li>
                     `
-                    todoCount ++;
+                    todoCount++;
                 }
             }
 
             todo.innerHTML = todoString;
             todoCountDom.innerHTML = `<strong>${todoCount}</strong> items left`;
+
+
+            var destroys=document.getElementsByClassName("destroy");
+            for(var i=0; i<destroys.length; i++){
+                destroys[i].addEventListener("click", function(e, i){
+                    console.log(e.path[2].dataset.id);
+                    remove(e.path[2].dataset.id);
+                });
+            }
+
         }else{
             todo.innerHTML = "";
             todoCountDom.innerHTML= 0;
@@ -83,6 +93,12 @@
         }else{
             return [];
         }
+    }
+
+    function remove(i){
+        todolist.splice(i, 1);
+        saveData(todolist);
+        load();
     }
 
     function clear(){
