@@ -46,31 +46,49 @@
         if(todolist.length != 0){
 
             for(var i=0; i<todolist.length; i++){
-                if(!todolist[i].done){
-                    todoString +=`
-                        <li data-id=${i}>
-                            <div class="view">
-                                <input type="checkbox" class="toggle">
-                                <label>`+todolist[i].todo+`</label>
-                                <button class="destroy"></button>
-                            </div>
-                        </li>
-                    `
-                    todoCount++;
-                }
+                todoString +=`
+                    <li data-id=${i} class="${todolist[i].done?'completed':''}">
+                        <div class="view">
+                            <input type="checkbox" class="toggle">
+                            <label>`+todolist[i].todo+`</label>
+                            <button class="destroy"></button>
+                        </div>
+                    </li>
+                `;
+                if(!todolist[i].done)todoCount++;
             }
 
             todo.innerHTML = todoString;
             todoCountDom.innerHTML = `<strong>${todoCount}</strong> items left`;
 
+            var todoDoms = document.getElementsByClassName("todo-list")[0].children;
 
-            var destroys=document.getElementsByClassName("destroy");
-            for(var i=0; i<destroys.length; i++){
-                destroys[i].addEventListener("click", function(e, i){
-                    console.log(e.path[2].dataset.id);
+            for(var i=0; i< todoDoms.length; i++){
+                todoDoms[i].firstElementChild.children[0].addEventListener("click",function(e){
+                    toggleComplete(e.path[2].dataset.id);
+                });
+
+                todoDoms[i].firstElementChild.children[2].addEventListener("click",function(e){
                     remove(e.path[2].dataset.id);
                 });
+
+                todoDoms[i].firstElementChild.children[1].addEventListener("dblclick",function(e){
+                    console.log(e.path[0].textContent);
+                    var input = document.createElement('input');
+                    input.className='edit';
+                    input.value = e.path[0].textContent;
+                    input.addEventListener('keypress',function(e){
+                        if(e.keyCode===13){
+                            update(e.path[1].dataset.id, e.target.value);
+                        }
+                    })
+                    e.path[2].append(input);
+                    e.path[2].className="editing";
+                });
             }
+
+
+
 
         }else{
             todo.innerHTML = "";
@@ -93,6 +111,18 @@
         }else{
             return [];
         }
+    }
+
+    function update(i, value){
+        todolist[i].todo = value;
+        saveData(todolist);
+        load();
+    }
+
+    function toggleComplete(i){
+        todolist[i].done=!todolist[i].done;
+        saveData(todolist);
+        load();
     }
 
     function remove(i){
