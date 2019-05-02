@@ -20,7 +20,7 @@
     }
 
     Controller.prototype._filter = function(){
-        this.showAll();
+        this.showAll();//这里原文用了很操蛋的show['All']类似这种，可变函数？害我着了好久。
     }
 
     Controller.prototype._updateFilterState = function(){
